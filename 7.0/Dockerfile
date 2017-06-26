@@ -1,8 +1,5 @@
 FROM php:7.0-fpm
 
-RUN echo "memory_limit=-1" > $PHP_INI_DIR/conf.d/memory-limit.ini \
- && echo "date.timezone=${PHP_TIMEZONE:-Europe/Moscow}" > "$PHP_INI_DIR/conf.d/date_timezone.ini"
-
 RUN ln -fs /usr/share/zoneinfo/${PHP_TIMEZONE:-Europe/Moscow} /etc/localtime
 ENV DEV_PACKAGES "libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng12-dev libbz2-dev \
     libxslt-dev libldap2-dev   libz-dev  libmemcached-dev libtidy-dev libcurl4-openssl-dev libc-client2007e-dev \
@@ -44,9 +41,9 @@ RUN apt-get update -q \
   && echo 'no' | pecl install -o -f memcached && docker-php-ext-enable memcached \
   && pecl install -o -f igbinary msgpack && docker-php-ext-enable igbinary msgpack \
   && pecl install -o -f redis && docker-php-ext-enable redis \
-  && wget -q http://pecl.php.net/get/translit -O /tmp/translit && pecl install -o -f /tmp/translit && docker-php-ext-enable translit \
+  && wget -q http://pecl.php.net/get/translit -O /tmp/translit && pecl install -o -f /tmp/translit && docker-php-ext-enable translit && rm -f /tmp/translit \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false ${DEV_PACKAGES} \
-  && rm -r /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/*
 
 
 ENV PATH "/composer/vendor/bin:$PATH"
@@ -94,4 +91,41 @@ RUN wget -q https://download.newrelic.com/php_agent/release/newrelic-${NEWRELIC_
                -e 's|;?newrelic.error_collector.record_database_errors =.+$|newrelic.error_collector.record_database_errors = true|g' \
        /usr/local/etc/php/conf.d/newrelic.ini \
     && rm -rf /tmp/newrelic-* /tmp/nrinstall-*
+
+ENV ERROR_LOG=/proc/self/fd/2 \
+    LOG_LEVEL=notice \
+    PROCESS_CONTROL_TIMEOUT=1 \
+    FPM_LISTEN="0.0.0.0:9000" \
+    LISTEN_BACKLOG=128 \
+    PM_MAX_CHILDREN=50 \
+    PM_MIN_SPARE_SERVERS=10 \
+    PM_MAX_SPARE_SERVERS=25 \
+    PM_MAX_REQUESTS=1000 \
+    REQUEST_TERMINATE_TIMEOUT=0 \
+    SLOW_LOG=/proc/self/fd/2 \
+    RLIMIT_FILES=8192 \
+    RLIMIT_CORE=0 \
+    SESSION_SAVE_HANDLER=files \
+    REQUEST_SLOWLOG_TIMEOUT=0 \
+    EXPOSE_PHP=0 \
+    PHP_ERROR_LOG=/tmp/php-error.log \
+    PHP_FCGI_ERROR_HEADER="HTTP/1.0 550 Overload" \
+    MAGIC_QUOTES=0 \
+    DISPLAY_ERRORS=Off \
+    DATE_TIMEZONE="Europe\Moscow" \
+    SESSION_CACHE_EXPIRE=86400 \
+    SESSION_SERIALIZE_HANDLER="php_binary" \
+    MEMORY_LIMIT="-1" \
+    UPLOAD_MAX_FILESIZE="500m" \
+    MAX_EXECUTION_TIME=30 \
+    MAX_INPUT_TIME="-1" \
+    GC_PROBABILITY="1" \
+    SESSION_SAVE_PATH="" \
+    SESSION_SAVE_HANDLER="files" \
+    MEMCACHED_SESS_LOCKING="Off"
+
+
+
+COPY www.conf /usr/local/etc/php-fpm.d/
+COPY php.ini /usr/local/etc/php/
 
