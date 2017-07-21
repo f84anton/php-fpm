@@ -76,23 +76,12 @@ WORKDIR /app
 ENV NEWRELIC_VER="php5-7.2.0.191-linux" \
     NR_INSTALL_SILENT=1 \
     NR_INSTALL_ARCH=x64 \
-    NR_INSTALL_USE_CP_NOT_LN=1 \
-    NEWRELICLICENSE="" \
-    NEWRELICAPPNAME="Default App Name" \
-    NEWRELICDAEMONDONTLAUHCH=3
+    NR_INSTALL_USE_CP_NOT_LN=1
 
 RUN wget -q https://download.newrelic.com/php_agent/release/newrelic-${NEWRELIC_VER}.tar.gz -O /tmp/newrelic-agent.tar.gz \
     && tar xf /tmp/newrelic-agent.tar.gz -C /tmp/ \
     && /tmp/newrelic-${NEWRELIC_VER}/newrelic-install install \
-    && sed -ri -e 's|;?newrelic.daemon.dont_launch =.+$|newrelic.daemon.dont_launch = ${NEWRELICDAEMONDONTLAUHCH}|g' \
-               -e 's|;?newrelic.license =.+$|newrelic.license = ${NEWRELICLICENSE}|g' \
-               -e 's|;?newrelic.logfile =.+$|newrelic.logfile = /proc/self/fd/2|g' \
-               -e 's|;?newrelic.appname =.+$|newrelic.appname = ${NEWRELICAPPNAME}|g' \
-               -e 's|;?newrelic.daemon.logfile =.+$|newrelic.daemon.logfile = /proc/self/fd/2|g' \
-               -e 's|;?newrelic.capture_params =.+$|newrelic.capture_params = true|g' \
-               -e 's|;?newrelic.error_collector.record_database_errors =.+$|newrelic.error_collector.record_database_errors = true|g' \
-       /usr/local/etc/php/conf.d/newrelic.ini \
-    && rm -rf /tmp/newrelic-* /tmp/nrinstall-*
+    && rm -rf /tmp/newrelic-* /tmp/nrinstall-* /usr/local/etc/php/conf.d/newrelic.ini 
 
 
 RUN rm -f /usr/local/etc/php-fpm.d/zz-docker.conf
