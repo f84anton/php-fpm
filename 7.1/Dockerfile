@@ -73,7 +73,7 @@ RUN git config --global user.email "yourci@gmail.com" && git config --global use
 
 WORKDIR /app
 
-ENV NEWRELIC_VER="php5-7.2.0.191-linux" \
+ENV NEWRELIC_VER="php5-7.4.0.198-linux" \
     NR_INSTALL_SILENT=1 \
     NR_INSTALL_ARCH=x64 \
     NR_INSTALL_USE_CP_NOT_LN=1
