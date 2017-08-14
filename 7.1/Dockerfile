@@ -26,6 +26,13 @@ RUN apt-get update -q && \
     librecode0 \
     libmemcachedutil2 \
     libxslt1.1 \
+    libjpeg-turbo-progs \
+    mediainfo \
+    ghostscript \
+    gsfonts \
+    fonts-dejavu-core \
+    poppler-utils \
+    libjasper-runtime \
     && rm -r /var/lib/apt/lists/*
 
 
