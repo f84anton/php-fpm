@@ -26,13 +26,6 @@ RUN apt-get update -q && \
     librecode0 \
     libmemcachedutil2 \
     libxslt1.1 \
-    libjpeg-turbo-progs \
-    mediainfo \
-    ghostscript \
-    gsfonts \
-    fonts-dejavu-core \
-    poppler-utils \
-    libjasper-runtime \
     && rm -r /var/lib/apt/lists/*
 
 
@@ -51,7 +44,8 @@ RUN apt-get update -q \
   && echo 'no' | pecl install -o -f memcached && docker-php-ext-enable memcached \
   && pecl install -o -f igbinary msgpack && docker-php-ext-enable igbinary msgpack \
   && pecl install -o -f redis && docker-php-ext-enable redis \
-  && wget -q http://pecl.php.net/get/translit -O /tmp/translit && pecl install -o -f /tmp/translit && docker-php-ext-enable translit && rm -f /tmp/translit \
+  && curl -sL http://pecl.php.net/get/translit -o /tmp/translit \
+  && pecl install -o -f /tmp/translit && docker-php-ext-enable translit && rm -f /tmp/translit \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false ${DEV_PACKAGES} \
   && rm -r /var/lib/apt/lists/*
 
@@ -92,3 +86,20 @@ RUN wget -q https://download.newrelic.com/php_agent/release/newrelic-${NEWRELIC_
 
 
 RUN rm -f /usr/local/etc/php-fpm.d/zz-docker.conf
+
+RUN apt-get update -qq \
+    && apt-get install -qy \
+    python2.7-minimal \
+    libav-tools \
+    libjpeg-turbo-progs \
+    mediainfo \
+    ghostscript \
+    gsfonts \
+    fonts-dejavu-core \
+    poppler-utils \
+    libjasper-runtime \
+    && rm -r /var/lib/apt/lists/*
+
+RUN curl -sL https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl \
+    && chmod +x /usr/local/bin/youtube-dl 
+
