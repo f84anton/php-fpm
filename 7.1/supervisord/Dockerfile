@@ -1,4 +1,4 @@
-FROM f84anton/php-fpm:7.1
+FROM f84anton/php-fpm:7.1-xdebug
 
 RUN apt-get update -qq && \
     apt-get install -qy \
