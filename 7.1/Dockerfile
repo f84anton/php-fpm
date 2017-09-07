@@ -3,8 +3,10 @@ FROM php:7.1-fpm
 RUN echo "memory_limit=-1" > $PHP_INI_DIR/conf.d/memory-limit.ini \
  && echo "date.timezone=${PHP_TIMEZONE:-Europe/Moscow}" > "$PHP_INI_DIR/conf.d/date_timezone.ini"
 
+RUN sed -i 's/jessie/stretch/g' /etc/apt/sources.list
+
 RUN ln -fs /usr/share/zoneinfo/${PHP_TIMEZONE:-Europe/Moscow} /etc/localtime
-ENV DEV_PACKAGES "libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng12-dev libbz2-dev \
+ENV DEV_PACKAGES "libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev libbz2-dev \
     libxslt-dev libldap2-dev   libz-dev  libmemcached-dev libtidy-dev libcurl4-openssl-dev libc-client2007e-dev \
     libkrb5-dev libmagickwand-6.q16-dev libxml2-dev libedit-dev libicu-dev librecode-dev libxslt1-dev"
 ENV DEBIAN_FRONTEND noninteractive
@@ -18,14 +20,19 @@ RUN apt-get update -q && \
     wget \
     openssh-client \
     libimage-exiftool-perl \
-    libtidy-0.99 \
+    libtidy5 \
     libc-client2007e \
-    libmagickwand-6.q16-2 \
+    libmagickwand-6.q16-3 \
     libmcrypt4 \
     libmemcached11 \
     librecode0 \
     libmemcachedutil2 \
     libxslt1.1 \
+    ghostscript \
+    gsfonts \
+    fonts-dejavu-core \
+    libpng16-16 \
+    && apt-get remove -yq --purge libgnutls-deb0-28 \
     && rm -r /var/lib/apt/lists/*
 
 
@@ -74,7 +81,7 @@ RUN git config --global user.email "yourci@gmail.com" && git config --global use
 
 WORKDIR /app
 
-ENV NEWRELIC_VER="php5-7.4.0.198-linux" \
+ENV NEWRELIC_VER="php5-7.5.0.199-linux" \
     NR_INSTALL_SILENT=1 \
     NR_INSTALL_ARCH=x64 \
     NR_INSTALL_USE_CP_NOT_LN=1
@@ -93,12 +100,9 @@ RUN apt-get update -qq \
     libav-tools \
     libjpeg-turbo-progs \
     mediainfo \
-    ghostscript \
-    gsfonts \
-    fonts-dejavu-core \
     poppler-utils \
-    libjasper-runtime \
     && rm -r /var/lib/apt/lists/*
+#    libjasper1 \
 
 RUN curl -sL https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl \
     && chmod +x /usr/local/bin/youtube-dl 

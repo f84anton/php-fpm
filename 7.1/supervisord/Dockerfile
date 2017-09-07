@@ -10,11 +10,10 @@ RUN apt-get update -qq && \
     gsfonts \
     fonts-dejavu-core \
     poppler-utils \
-    libjasper-runtime \
     git \
     python2.7 \
     && rm -rf /var/lib/apt/lists/*
-
+#    libjasper-runtime \
 
 RUN composer require -d /composer --ansi --no-interaction phpunit/php-invoker phpunit/dbunit
 
