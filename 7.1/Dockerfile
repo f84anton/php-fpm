@@ -6,9 +6,9 @@ RUN echo "memory_limit=-1" > $PHP_INI_DIR/conf.d/memory-limit.ini \
 RUN sed -i 's/jessie/stretch/g' /etc/apt/sources.list
 
 RUN ln -fs /usr/share/zoneinfo/${PHP_TIMEZONE:-Europe/Moscow} /etc/localtime
-ENV DEV_PACKAGES "libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev libbz2-dev \
+ENV DEV_PACKAGES "libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev libbz2-dev libmagickcore-dev \
     libxslt-dev libldap2-dev   libz-dev  libmemcached-dev libtidy-dev libcurl4-openssl-dev libc-client2007e-dev \
-    libkrb5-dev libmagickwand-6.q16-dev libxml2-dev libedit-dev libicu-dev librecode-dev libxslt1-dev"
+    libkrb5-dev libmagickwand-6.q16-dev libxml2-dev libedit-dev libicu-dev librecode-dev libxslt1-dev librsvg2-dev"
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update -q && \
@@ -32,9 +32,15 @@ RUN apt-get update -q && \
     gsfonts \
     fonts-dejavu-core \
     libpng16-16 \
+    librsvg2-bin \
+    libmagickcore-6.q16-3-extra \
+    locales locales-all \
     && apt-get remove -yq --purge libgnutls-deb0-28 \
     && rm -r /var/lib/apt/lists/*
 
+ENV LANG='en_US.UTF-8' \
+    LANGUAGE='en_US.UTF-8' \
+    LC_ALL='en_US.UTF-8'
 
 RUN apt-get update -q \
   && apt-get install -qy --no-install-recommends ${DEV_PACKAGES} \
@@ -81,7 +87,7 @@ RUN git config --global user.email "yourci@gmail.com" && git config --global use
 
 WORKDIR /app
 
-ENV NEWRELIC_VER="php5-7.5.0.199-linux" \
+ENV NEWRELIC_VER="php5-7.6.0.201-linux" \
     NR_INSTALL_SILENT=1 \
     NR_INSTALL_ARCH=x64 \
     NR_INSTALL_USE_CP_NOT_LN=1
