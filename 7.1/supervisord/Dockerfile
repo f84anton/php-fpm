@@ -44,7 +44,7 @@ RUN  easy_install \
      youtube-dl
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
-VOLUME ["/etc/supervisor/conf.d"]
+
 WORKDIR /etc/supervisor/conf.d
 
 ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/supervisord.conf"]
